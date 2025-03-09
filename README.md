@@ -84,7 +84,6 @@ Implement secure user registration and login endpoints using JSON Web Tokens (JW
 **Detailed Requirements:**
 
 - **Registration (`POST /api/auth/register`):**
-
   - Accept user details such as username, email, and password.
   - Validate that the email is unique.
   - Encrypt the password (e.g., using BCrypt) before storing it in the database.
@@ -92,7 +91,6 @@ Implement secure user registration and login endpoints using JSON Web Tokens (JW
   - Return a success message once the user is registered.
 
 - **Login (`POST /api/auth/login`):**
-  
   - Accept user credentials (username/email and password).
   - Validate the credentials against the stored data.
   - If authentication is successful, generate a JWT that includes at least the user ID as the subject.
