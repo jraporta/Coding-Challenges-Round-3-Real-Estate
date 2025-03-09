@@ -220,6 +220,7 @@ Implement an auction system where properties can be bid upon using RabbitMQ to m
         - Returns a JSON response containing the winning bid amount and the winning user's ID.
 
 **Concurrency & RabbitMQ:**  
+  
   - The bidding system uses RabbitMQ to handle high volumes of bids concurrently.
 
   - Bids are enqueued and then processed asynchronously by a message listener, ensuring that race conditions are minimized.
