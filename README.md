@@ -84,29 +84,29 @@ Implement secure user registration and login endpoints using JSON Web Tokens (JW
 **Detailed Requirements:**
 
 - **Registration (`POST /api/auth/register`):**
-  - Accept user details such as username, email, and password.
-  - Validate that the email is unique.
-  - Encrypt the password (e.g., using BCrypt) before storing it in the database.
-  - Set new users to `unemployed` by default.
-  - Return a success message once the user is registered.
+    - Accept user details such as username, email, and password.
+    - Validate that the email is unique.
+    - Encrypt the password (e.g., using BCrypt) before storing it in the database.
+    - Set new users to `unemployed` by default.
+    - Return a success message once the user is registered.
 
 - **Login (`POST /api/auth/login`):**
-  - Accept user credentials (username/email and password).
-  - Validate the credentials against the stored data.
-  - If authentication is successful, generate a JWT that includes at least the user ID as the subject.
-  - The JWT should have an expiration time defined in the application properties.
-  - Return the JWT in the response. For example: `{ "success": true, "token": "<JWT_TOKEN>" }`.
+    - Accept user credentials (username/email and password).
+    - Validate the credentials against the stored data.
+    - If authentication is successful, generate a JWT that includes at least the user ID as the subject.
+    - The JWT should have an expiration time defined in the application properties.
+    - Return the JWT in the response. For example: `{ "success": true, "token": "<JWT_TOKEN>" }`.
 
 - **Session check (`GET /api/user/me`)**:
-  - Returns the user id, username and email.
-  - Used to verify that the tokens are working correctly.
-  ```json
-  { "id": 1, "username": "nuwe", "email": "nuwe@example.com" }
-  ```
+    - Returns the user id, username and email.
+    - Used to verify that the tokens are working correctly.
+    ```json
+      { "id": 1, "username": "nuwe", "email": "nuwe@example.com" }
+    ```
 
 - **Security Considerations:**  
-  - Ensure that the JWT is used to protect all endpoints that require authentication.
-  - Implement a JWT filter that validates incoming tokens and loads user details accordingly.
+    - Ensure that the JWT is used to protect all endpoints that require authentication.
+    - Implement a JWT filter that validates incoming tokens and loads user details accordingly.
 
 ---
 
@@ -118,27 +118,27 @@ Implement a web scraping endpoint that extracts property details from Idealista 
 **Detailed Requirements:**
 
 - **Endpoint (`POST /api/scrape`):**  
-  - Accept a JSON payload with:
-    - `"url"`: The URL of the property on Idealista.
-    - `"store"`: A Boolean flag indicating whether the scraped property should be saved in the database.
+    - Accept a JSON payload with:
+      - `"url"`: The URL of the property on Idealista.
+      - `"store"`: A Boolean flag indicating whether the scraped property should be saved in the database.
   
 - **Data Extraction:**  
-  - Use a library like Jsoup to connect to the provided URL.
-  - Extract the following details:
-    - **Property Type:** Extracted from the title as the first word (e.g., "Chalet", "Apartamento"). Stored as "name" in the database.
-    - **Full Title:** The complete title of the property as it appears on the page.
-    - **Location:** The property’s location (could be a street name, neighborhood, or city).
-    - **Price:** The price, ensuring it is converted to a standard numerical format(Decimal).
-    - **Size:** The area of the property (in m²).
-    - **Rooms:** The number of rooms, extracted from text like "4 hab.".
-  - If the data for any of these fields is not available, handle it gracefully (e.g., set to an empty string or a default value).
+    - Use a library like Jsoup to connect to the provided URL.
+    - Extract the following details:
+      - **Property Type:** Extracted from the title as the first word (e.g., "Chalet", "Apartamento"). Stored as "name" in the database.
+      - **Full Title:** The complete title of the property as it appears on the page.
+      - **Location:** The property’s location (could be a street name, neighborhood, or city).
+      - **Price:** The price, ensuring it is converted to a standard numerical format(Decimal).
+      - **Size:** The area of the property (in m²).
+      - **Rooms:** The number of rooms, extracted from text like "4 hab.".
+    - If the data for any of these fields is not available, handle it gracefully (e.g., set to an empty string or a default value).
 
 - **Storage Behavior:**  
-  - If `"store"` is `true`, create a new property record in the database with the extracted data.
-  - Set the property’s `availability` field to `"Available"` by default.
+    - If `"store"` is `true`, create a new property record in the database with the extracted data.
+    - Set the property’s `availability` field to `"Available"` by default.
   
 - **Response:**  
-  - Return a JSON object that includes the extracted data and a flag indicating whether the property was saved.
+    - Return a JSON object that includes the extracted data and a flag indicating whether the property was saved.
 
 ---
 
@@ -150,38 +150,38 @@ Implement a mortgage application system that evaluates if an authenticated user 
 **Detailed Requirements:**
 
 - **Employment Data:**  
-  - Create an endpoint (`POST /api/employment`) where authenticated users can submit or update their employment data, including:
-    - **Contract Type:** Values like "indefinite", "temporary", or `NULL` (default at registration).
-    - **Salary:** The gross annual salary.
-  - On submission, automatically calculate the net monthly salary using Spanish tax brackets:
-    - 0 – 12,450€: 19% retention  
-    - 12,450 – 20,199€: 24% retention  
-    - 20,200 – 35,199€: 30% retention  
-    - 35,200 – 59,999€: 37% retention  
-    - 60,000 – 299,999€: 45% retention  
-    - Above 299,999€: 50% retention (new bracket as per requirement)
-  - Based on the presence of employment data, update the user’s employment status (e.g., from "unemployed" to "employed").
+    - Create an endpoint (`POST /api/employment`) where authenticated users can submit or update their employment data, including:
+      - **Contract Type:** Values like "indefinite", "temporary", or `NULL` (default at registration).
+      - **Salary:** The gross annual salary.
+    - On submission, automatically calculate the net monthly salary using Spanish tax brackets:
+      - 0 – 12,450€: 19% retention  
+      - 12,450 – 20,199€: 24% retention  
+      - 20,200 – 35,199€: 30% retention  
+      - 35,200 – 59,999€: 37% retention  
+      - 60,000 – 299,999€: 45% retention  
+      - Above 299,999€: 50% retention (new bracket as per requirement)
+    - Based on the presence of employment data, update the user’s employment status (e.g., from "unemployed" to "employed").
 
 - **Mortgage Request:**  
-  - Implement an endpoint (`POST /api/mortgage`) that allows an authenticated user to request a mortgage.
-  - The system should:
-    - Validate whether the user has a job. If not, returns an error.
-    - Retrieve the selected property’s price from the database.
-    - Calculate the total property cost as the property price plus 15% extras (to cover VAT and additional fees).
-    - Use the user’s net monthly salary (calculated previously) and their contract type to set an allowed payment threshold (30% for indefinite contracts; 15% for temporary contracts).
-    - Calculate the monthly payment using a fixed annual interest rate of 2% and the provided term (minimum 15 years). Use the standard amortization formula:
-      - Payment = P * r / (1 - (1 + r)^(-n))
-      - Where P = total cost, r = monthly interest rate, n = total number of months.
-    - Determine whether the calculated monthly payment is within the allowed percentage of the user’s net monthly salary.
-    - If the monthly payment exceeds the threshold, reject the application with an appropriate error message; otherwise, approve it.
-    - If approved, save the mortgage details in the database and associate the mortgage with the user and the property.
+    - Implement an endpoint (`POST /api/mortgage`) that allows an authenticated user to request a mortgage.
+    - The system should:
+      - Validate whether the user has a job. If not, returns an error.
+      - Retrieve the selected property’s price from the database.
+      - Calculate the total property cost as the property price plus 15% extras (to cover VAT and additional fees).
+      - Use the user’s net monthly salary (calculated previously) and their contract type to set an allowed payment threshold (30% for indefinite contracts; 15% for temporary contracts).
+      - Calculate the monthly payment using a fixed annual interest rate of 2% and the provided term (minimum 15 years). Use the standard amortization formula:
+        - Payment = P * r / (1 - (1 + r)^(-n))
+        - Where P = total cost, r = monthly interest rate, n = total number of months.
+      - Determine whether the calculated monthly payment is within the allowed percentage of the user’s net monthly salary.
+      - If the monthly payment exceeds the threshold, reject the application with an appropriate error message; otherwise, approve it.
+      - If approved, save the mortgage details in the database and associate the mortgage with the user and the property.
 
 - **User dashboard:**
-  - Implement an endpoint (`GET /api/user/dashboard`) that allows an authenticated user to request personal data.
-  - It must show employment data and mortgages.
+    - Implement an endpoint (`GET /api/user/dashboard`) that allows an authenticated user to request personal data.
+    - It must show employment data and mortgages.
 
 - **Response:**  
-  - Return a JSON response indicating whether the mortgage was approved, the calculated monthly payment, and (if approved) the mortgage ID.
+    - Return a JSON response indicating whether the mortgage was approved, the calculated monthly payment, and (if approved) the mortgage ID.
 
 ---
 
@@ -193,40 +193,40 @@ Implement an auction system where properties can be bid upon using RabbitMQ to m
 **Detailed Requirements:**
 
 - **Auction Creation:**  
-  - Implement an endpoint (`POST /api/auction/create`) that creates a new auction for a property.  
-  - The auction must include:
-    - Property reference (must exist in the database).
-    - Start and end times (ISO 8601 formatted).
-    - Starting price.
-    - Minimum bid increment.
-    - Initial current highest bid set to the starting price.
+    - Implement an endpoint (`POST /api/auction/create`) that creates a new auction for a property.  
+    - The auction must include:
+      - Property reference (must exist in the database).
+      - Start and end times (ISO 8601 formatted).
+      - Starting price.
+      - Minimum bid increment.
+      - Initial current highest bid set to the starting price.
   
 - **Placing Bids:**  
-  - Implement an endpoint (`POST /api/auction/{auctionId}/bid`) where authenticated users can place bids.
-  - When a bid is placed:
-    - Verify that the auction exists and is still open.
-    - Create a bid message with the auction ID, user ID, bid amount, and timestamp.
-    - Publish the bid message to a RabbitMQ queue.
-    - The bid message is then asynchronously processed by a consumer that updates the auction's current highest bid if applicable.
+    - Implement an endpoint (`POST /api/auction/{auctionId}/bid`) where authenticated users can place bids.
+    - When a bid is placed:
+      - Verify that the auction exists and is still open.
+      - Create a bid message with the auction ID, user ID, bid amount, and timestamp.
+      - Publish the bid message to a RabbitMQ queue.
+      - The bid message is then asynchronously processed by a consumer that updates the auction's current highest bid if applicable.
   
 - **Auction Details:**  
-  - Implement an endpoint (`GET /api/auction/{auctionId}`) to retrieve auction details, including all submitted bids.
+    - Implement an endpoint (`GET /api/auction/{auctionId}`) to retrieve auction details, including all submitted bids.
   
 - **Closing Auctions:**  
-  - Implement an endpoint (`PATCH /api/auction/{auctionId}/close`) that:
-    - Closes the auction by setting its status to "closed".
-    - Processes all bids to determine the winning bid (the highest bid).
-    - Updates the property’s availability to "Unavailable".
-    - Returns a JSON response containing the winning bid amount and the winning user's ID.
+    - Implement an endpoint (`PATCH /api/auction/{auctionId}/close`) that:
+      - Closes the auction by setting its status to "closed".
+      - Processes all bids to determine the winning bid (the highest bid).
+      - Updates the property’s availability to "Unavailable".
+      - Returns a JSON response containing the winning bid amount and the winning user's ID.
 
 **Concurrency & RabbitMQ:**  
-- The bidding system uses RabbitMQ to handle high volumes of bids concurrently.  
-- Bids are enqueued and then processed asynchronously by a message listener, ensuring that race conditions are minimized.
-- You may implement a delay in the consumer (for testing purposes) to observe how messages accumulate in the queue.
-- Names for RabbitMQ configuration:
-  - `bid.queue`
-  - `bid.exchange`
-  - `bid.routingkey`
+  - The bidding system uses RabbitMQ to handle high volumes of bids concurrently.  
+  - Bids are enqueued and then processed asynchronously by a message listener, ensuring that race conditions are minimized.
+  - You may implement a delay in the consumer (for testing purposes) to observe how messages accumulate in the queue.
+  - Names for RabbitMQ configuration:
+    - `bid.queue`
+    - `bid.exchange`
+    - `bid.routingkey`
 
 ---
 
