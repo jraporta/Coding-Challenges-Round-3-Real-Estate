@@ -1,5 +1,7 @@
 package com.round3.realestate.controller;
 
+import com.round3.realestate.payload.LoginRequest;
+import com.round3.realestate.payload.LoginSuccessfulResponse;
 import com.round3.realestate.payload.RegistrationRequest;
 import com.round3.realestate.payload.RegistrationResponse;
 import com.round3.realestate.service.AuthService;
@@ -23,6 +25,12 @@ public class AuthController {
     public ResponseEntity<RegistrationResponse> register(@RequestBody RegistrationRequest req) {
         authService.registerUser(req.getEmail(), req.getUsername(), req.getPassword());
         return ResponseEntity.ok(new RegistrationResponse(true, "User successfully registered"));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginSuccessfulResponse> login(@RequestBody LoginRequest req) {
+        String token = authService.loginUser(req.getUsernameOrEmail(), req.getPassword());
+        return ResponseEntity.ok(new LoginSuccessfulResponse(token));
     }
 
 }
