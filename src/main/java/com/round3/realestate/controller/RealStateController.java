@@ -3,6 +3,7 @@ package com.round3.realestate.controller;
 import com.round3.realestate.payload.RealStateData;
 import com.round3.realestate.payload.ScrapeRequest;
 import com.round3.realestate.payload.ScrapeResponse;
+import com.round3.realestate.service.PropertyService;
 import com.round3.realestate.service.ScrapeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,17 +15,22 @@ public class RealStateController {
 
     private final ScrapeService scrapeService;
 
-    public RealStateController(ScrapeService scrapeService) {
+    private final PropertyService propertyService;
+
+    public RealStateController(ScrapeService scrapeService, PropertyService propertyService) {
         this.scrapeService = scrapeService;
+        this.propertyService = propertyService;
     }
 
     @PostMapping("/api/scrape")
-    public ResponseEntity<ScrapeResponse> scrape(@RequestBody ScrapeRequest req) {
+    public ResponseEntity<ScrapeResponse> scrapeProperty(@RequestBody ScrapeRequest req) {
+        boolean saved = false;
         RealStateData data = scrapeService.scrape(req.getUrl());
         if (Boolean.TRUE.equals(req.getStore())) {
-            return ResponseEntity.ok(new ScrapeResponse(data, true));
+            propertyService.createProperty(data);
+            saved = true;
         }
-        return ResponseEntity.ok(new ScrapeResponse(data, false));
+        return ResponseEntity.ok(new ScrapeResponse(data, saved));
     }
 
 }

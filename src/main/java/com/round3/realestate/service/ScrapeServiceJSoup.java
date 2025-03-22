@@ -1,6 +1,5 @@
 package com.round3.realestate.service;
 
-import com.round3.realestate.exception.CustomInternalServerException;
 import com.round3.realestate.payload.RealStateData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.fluent.Request;
@@ -121,8 +120,9 @@ public class ScrapeServiceJSoup implements ScrapeService {
             return Request.get(apiUrl)
                     .execute().returnContent().asString();
         } catch (IOException e) {
-            throw new CustomInternalServerException(e.getMessage());
+            log.error("Could not retrieve the url: {}", e.getMessage());
         }
+        return "";
     }
 
 }
