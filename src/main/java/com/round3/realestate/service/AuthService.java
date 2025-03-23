@@ -23,7 +23,7 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    public void registerUser(String email, String username, String password) {
+    public User registerUser(String email, String username, String password) {
         if(userRepository.existsByUsername(username)){
             throw new RegistrationException("The username already exists");
         }
@@ -31,7 +31,7 @@ public class AuthService {
             throw new RegistrationException("Email already exists");
         }
         User newUser = new User(null, username, email, passwordEncoder.encode(password));
-        userRepository.save(newUser);
+        return userRepository.save(newUser);
     }
 
     public String loginUser(String usernameOrEmail, String password) {

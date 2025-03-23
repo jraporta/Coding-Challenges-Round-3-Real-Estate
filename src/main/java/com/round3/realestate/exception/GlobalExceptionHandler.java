@@ -20,4 +20,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginFailedResponse(ex.getMessage()));
     }
 
+    @ExceptionHandler(CustomBadRequestException.class)
+    public ResponseEntity<String> handleCustomBadRequestException(CustomBadRequestException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
 }
