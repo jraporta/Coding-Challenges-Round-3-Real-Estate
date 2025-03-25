@@ -58,7 +58,7 @@ public class AuctionServiceImp implements AuctionService{
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new AuctionException(AUCTION_NOT_FOUND));
         validateBid(auction, bidAmount);
-        auction.setCurrentHighestBid(auction.getCurrentHighestBid().add(bidAmount));
+        auction.setCurrentHighestBid(bidAmount);
         Bid bid = new Bid(
                 null,
                 bidAmount,
@@ -95,7 +95,7 @@ public class AuctionServiceImp implements AuctionService{
         if ("closed".equalsIgnoreCase(auction.getStatus())) {
             throw new AuctionException("Auction is closed.");
         }
-        if (auction.getMinIncrement().compareTo(bidAmount) > 0) {
+        if (auction.getMinIncrement().compareTo(bidAmount.subtract(auction.getCurrentHighestBid())) > 0) {
             throw new AuctionException("Bid amount must not exceed the established minimum increase.");
         }
     }
