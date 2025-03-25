@@ -19,7 +19,7 @@ public class EmploymentServiceImp implements EmploymentService{
     }
 
     @Override
-    public void initiate(User user) {
+    public EmploymentData initiate(User user) {
         EmploymentData data = new EmploymentData(
                 null,
                 null,
@@ -27,7 +27,7 @@ public class EmploymentServiceImp implements EmploymentService{
                 new BigDecimal(0),
                 new BigDecimal(0),
                 user);
-        employmentDataRepository.save(data);
+        return employmentDataRepository.save(data);
     }
 
     @Override
@@ -51,6 +51,11 @@ public class EmploymentServiceImp implements EmploymentService{
                         "unemployed" : "employed");
 
         return employmentDataRepository.save(data);
+    }
+
+    @Override
+    public EmploymentData getEmployment(User user) {
+        return employmentDataRepository.findByUserId(user.getId()).orElseGet(() -> initiate(user));
     }
 
     private BigDecimal calculateMonthlyNetSalary(Double annualGrossSalary) {

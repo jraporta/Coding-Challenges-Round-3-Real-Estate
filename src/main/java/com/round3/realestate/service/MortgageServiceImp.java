@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -47,6 +48,7 @@ public class MortgageServiceImp implements MortgageService{
         validateEmploymentStatus(employmentData);
 
         Property property = getProperty(propertyId);
+        validatePropertyAvailability(property);
 
         BigDecimal totalCost = calculateTotalCost(property);
 
@@ -60,8 +62,14 @@ public class MortgageServiceImp implements MortgageService{
         validateAffordability(monthlyPayment, allowedThreshold, employmentData, allowedPercentageString);
         log.info("Mortgage accepted, monthly payment established in {}€", monthlyPayment);
 
+        property.setAvailability("Unavailable");
         Mortgage mortgage = saveMortgage(years, user, monthlyPayment, property);
         return buildMortgageResponse(years, mortgage, employmentData, allowedPercentageString);
+    }
+
+    @Override
+    public List<Mortgage> getMortgages(User user) {
+        return mortgageRepository.findAllByUserId(user.getId());
     }
 
     private static void validateMortgageTerm(Integer years) {
@@ -78,6 +86,12 @@ public class MortgageServiceImp implements MortgageService{
     private void validateEmploymentStatus(EmploymentData employmentData) {
         if("unemployed".equalsIgnoreCase(employmentData.getEmploymentStatus())) {
             throw new MortgageException("Missing financial information. Please update your employment data.");
+        }
+    }
+
+    private void validatePropertyAvailability(Property property) {
+        if ("Unavailable".equalsIgnoreCase(property.getAvailability())) {
+            throw new MortgageException("Property is unavailable for mortgage.");
         }
     }
 
