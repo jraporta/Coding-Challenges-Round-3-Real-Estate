@@ -1,9 +1,6 @@
 package com.round3.realestate.exception;
 
-import com.round3.realestate.payload.LoginFailedResponse;
-import com.round3.realestate.payload.MortgageExceptionResponse;
-import com.round3.realestate.payload.MortgageRejectedResponse;
-import com.round3.realestate.payload.RegistrationResponse;
+import com.round3.realestate.payload.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -43,4 +40,8 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    @ExceptionHandler(AuctionException.class)
+    public ResponseEntity<AuctionErrorResponse> handleAuctionException(AuctionException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new AuctionErrorResponse(ex.getMessage()));
+    }
 }

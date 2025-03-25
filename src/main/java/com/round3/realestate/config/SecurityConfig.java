@@ -34,7 +34,9 @@ public class SecurityConfig {
                         .requestMatchers("/health",
                                 "/api/auth/register",
                                 "/api/auth/login",
-                                "/api/scrape").permitAll()
+                                "/api/scrape",
+                                "/api/auction/create",
+                                "/api/auction/*").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement((session -> session.sessionCreationPolicy((SessionCreationPolicy.STATELESS))))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
