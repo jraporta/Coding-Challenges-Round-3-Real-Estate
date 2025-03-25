@@ -38,4 +38,8 @@ public class AuctionController {
         return ResponseEntity.ok(auctionService.getDetails(auctionId));
     }
 
+    @PatchMapping("/{auctionId}/close")
+    public ResponseEntity<AuctionCloseResponse> closeAuction(@PathVariable Long auctionId) {
+        return ResponseEntity.ok(auctionService.closeAuction(auctionId));
+    }
 }

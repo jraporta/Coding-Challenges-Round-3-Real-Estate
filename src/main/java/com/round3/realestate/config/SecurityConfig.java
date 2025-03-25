@@ -36,7 +36,8 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/scrape",
                                 "/api/auction/create",
-                                "/api/auction/*").permitAll()
+                                "/api/auction/*",
+                                "/api/auction/*/close").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement((session -> session.sessionCreationPolicy((SessionCreationPolicy.STATELESS))))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

@@ -2,6 +2,7 @@ package com.round3.realestate.service;
 
 import com.round3.realestate.entity.Auction;
 import com.round3.realestate.entity.User;
+import com.round3.realestate.payload.AuctionCloseResponse;
 import com.round3.realestate.payload.AuctionDetailsResponse;
 
 import java.math.BigDecimal;
@@ -15,4 +16,6 @@ public interface AuctionService {
     void placeBid(Long auctionId, BigDecimal bidAmount, User user);
 
     AuctionDetailsResponse getDetails(Long auctionId);
+
+    AuctionCloseResponse closeAuction(Long auctionId);
 }
