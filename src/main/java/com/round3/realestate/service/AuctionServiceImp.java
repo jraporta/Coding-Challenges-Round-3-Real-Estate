@@ -5,6 +5,7 @@ import com.round3.realestate.entity.Bid;
 import com.round3.realestate.entity.Property;
 import com.round3.realestate.entity.User;
 import com.round3.realestate.exception.AuctionException;
+import com.round3.realestate.payload.AuctionDetailsResponse;
 import com.round3.realestate.repository.AuctionRepository;
 import com.round3.realestate.repository.BidRepository;
 import com.round3.realestate.repository.PropertyRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AuctionServiceImp implements AuctionService{
@@ -60,6 +62,14 @@ public class AuctionServiceImp implements AuctionService{
                 user
         );
         bidRepository.save(bid);
+    }
+
+    @Override
+    public AuctionDetailsResponse getDetails(Long auctionId) {
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new AuctionException("Auction not found."));
+        List<Bid> bids = bidRepository.findAllByAuctionId(auctionId);
+        return new AuctionDetailsResponse(auction, bids);
     }
 
     private void validateBid(Auction auction, BigDecimal bidAmount) {
