@@ -5,7 +5,7 @@ import com.round3.realestate.payload.LoginRequest;
 import com.round3.realestate.payload.LoginSuccessfulResponse;
 import com.round3.realestate.payload.RegistrationRequest;
 import com.round3.realestate.payload.RegistrationResponse;
-import com.round3.realestate.service.AuthService;
+import com.round3.realestate.service.AuthServiceImp;
 import com.round3.realestate.service.EmploymentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthService authService;
+    private final AuthServiceImp authService;
     private final EmploymentService employmentService;
 
-    public AuthController(AuthService authService, EmploymentService employmentService) {
+    public AuthController(AuthServiceImp authService, EmploymentService employmentService) {
         this.authService = authService;
         this.employmentService = employmentService;
     }
