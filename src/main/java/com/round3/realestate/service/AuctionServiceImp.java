@@ -11,6 +11,7 @@ import com.round3.realestate.payload.AuctionDetailsResponse;
 import com.round3.realestate.repository.AuctionRepository;
 import com.round3.realestate.repository.BidRepository;
 import com.round3.realestate.repository.PropertyRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class AuctionServiceImp implements AuctionService{
 
     public static final String AUCTION_NOT_FOUND = "Auction not found.";
@@ -72,6 +74,7 @@ public class AuctionServiceImp implements AuctionService{
                 user
         );
         rabbitMQBidProducer.sendMessage(bid);
+        log.info("RabbitMQ: sent bid: {}", bid);
     }
 
     @Override
@@ -97,11 +100,17 @@ public class AuctionServiceImp implements AuctionService{
                         "Auction closed successfully.", null, null));
     }
 
-    @RabbitListener(queues = RabbitMQConfig.QUEUE_NAME)
+    @RabbitListener(queues = RabbitMQConfig.QUEUE_NAME, concurrency = "1")
     private void bidConsumer(Bid bid){
+        log.info("RabbitMQ: Received new bid {}", bid);
         if (bid.getAuction().getCurrentHighestBid().compareTo(bid.getBidAmount()) < 0) {
             bid.getAuction().setCurrentHighestBid(bid.getBidAmount());
             bidRepository.save(bid);
+        }
+        try {
+            Thread.sleep(200); // Delay for testing purposes
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
