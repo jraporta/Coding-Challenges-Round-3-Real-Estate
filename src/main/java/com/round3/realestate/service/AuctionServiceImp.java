@@ -24,6 +24,7 @@ import java.util.Optional;
 public class AuctionServiceImp implements AuctionService{
 
     public static final String AUCTION_NOT_FOUND = "Auction not found.";
+    public static final String UNAVAILABLE = "Unavailable";
 
     private final AuctionRepository auctionRepository;
     private final PropertyRepository propertyRepository;
@@ -44,7 +45,7 @@ public class AuctionServiceImp implements AuctionService{
         Property property = propertyRepository.findById(propertyId)
                 .orElseThrow(() -> new AuctionException("Property not found."));
         validateProperty(property);
-        property.setAvailability("Unavailable");
+        property.setAvailability(UNAVAILABLE);
         Auction auction = new Auction(
                 null,
                 startingPrice,
@@ -85,7 +86,7 @@ public class AuctionServiceImp implements AuctionService{
     public AuctionCloseResponse closeAuction(Long auctionId) {
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new AuctionException(AUCTION_NOT_FOUND));
-        auction.getProperty().setAvailability("Unavailable");
+        auction.getProperty().setAvailability(UNAVAILABLE);
         auction.setStatus("closed");
         auctionRepository.save(auction);
         Optional<Bid> winningBid = bidRepository.findAllByAuction(auction).stream()
@@ -114,7 +115,7 @@ public class AuctionServiceImp implements AuctionService{
     }
 
     private void validateProperty(Property property) {
-        if ("Unavailable".equalsIgnoreCase(property.getAvailability())) {
+        if (UNAVAILABLE.equalsIgnoreCase(property.getAvailability())) {
             throw new AuctionException("Property is not available.");
         }
     }

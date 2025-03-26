@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "mortgages")
 public class Mortgage {
 
     @Id
