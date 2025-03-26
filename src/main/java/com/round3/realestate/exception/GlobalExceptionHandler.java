@@ -44,4 +44,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<AuctionErrorResponse> handleAuctionException(AuctionException ex){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new AuctionErrorResponse(ex.getMessage()));
     }
+
+    @ExceptionHandler(BadUrlException.class)
+    public ResponseEntity<AuctionErrorResponse> handleBadUrlException(BadUrlException ex){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new AuctionErrorResponse(ex.getMessage()));
+    }
 }
