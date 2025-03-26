@@ -105,12 +105,8 @@ public class AuctionServiceImp implements AuctionService{
         log.info("RabbitMQ: Received new bid {}", bid);
         if (bid.getAuction().getCurrentHighestBid().compareTo(bid.getBidAmount()) < 0) {
             bid.getAuction().setCurrentHighestBid(bid.getBidAmount());
+            auctionRepository.save(bid.getAuction());
             bidRepository.save(bid);
-        }
-        try {
-            Thread.sleep(200); // Delay for testing purposes
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         }
     }
 
