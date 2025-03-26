@@ -1,5 +1,6 @@
 package com.round3.realestate.service;
 
+import com.round3.realestate.config.RabbitMQConfig;
 import com.round3.realestate.entity.Auction;
 import com.round3.realestate.entity.Bid;
 import com.round3.realestate.entity.Property;
@@ -10,6 +11,7 @@ import com.round3.realestate.payload.AuctionDetailsResponse;
 import com.round3.realestate.repository.AuctionRepository;
 import com.round3.realestate.repository.BidRepository;
 import com.round3.realestate.repository.PropertyRepository;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,12 +28,14 @@ public class AuctionServiceImp implements AuctionService{
     private final AuctionRepository auctionRepository;
     private final PropertyRepository propertyRepository;
     private final BidRepository bidRepository;
+    private final RabbitMQBidProducer rabbitMQBidProducer;
 
     public AuctionServiceImp(AuctionRepository auctionRepository, PropertyRepository propertyRepository,
-                             BidRepository bidRepository) {
+                             BidRepository bidRepository, RabbitMQBidProducer rabbitMQBidProducer) {
         this.auctionRepository = auctionRepository;
         this.propertyRepository = propertyRepository;
         this.bidRepository = bidRepository;
+        this.rabbitMQBidProducer = rabbitMQBidProducer;
     }
 
     @Override
@@ -58,7 +62,6 @@ public class AuctionServiceImp implements AuctionService{
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new AuctionException(AUCTION_NOT_FOUND));
         validateBid(auction, bidAmount);
-        auction.setCurrentHighestBid(bidAmount);
         Bid bid = new Bid(
                 null,
                 bidAmount,
@@ -66,7 +69,7 @@ public class AuctionServiceImp implements AuctionService{
                 auction,
                 user
         );
-        bidRepository.save(bid);
+        rabbitMQBidProducer.sendMessage(bid);
     }
 
     @Override
@@ -89,6 +92,12 @@ public class AuctionServiceImp implements AuctionService{
                 auction.getCurrentHighestBid(), bid.getUser().getId()))
                 .orElseGet(() -> new AuctionCloseResponse(true,
                         "Auction closed successfully.", null, null));
+    }
+
+    @RabbitListener(queues = RabbitMQConfig.QUEUE_NAME)
+    private void bidConsumer(Bid bid){
+        bid.getAuction().setCurrentHighestBid(bid.getBidAmount());
+        bidRepository.save(bid);
     }
 
     private void validateBid(Auction auction, BigDecimal bidAmount) {
