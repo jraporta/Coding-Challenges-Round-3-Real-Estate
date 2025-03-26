@@ -44,6 +44,7 @@ public class AuctionServiceImp implements AuctionService{
         Property property = propertyRepository.findById(propertyId)
                 .orElseThrow(() -> new AuctionException("Property not found."));
         validateProperty(property);
+        property.setAvailability("Unavailable");
         Auction auction = new Auction(
                 null,
                 startingPrice,
