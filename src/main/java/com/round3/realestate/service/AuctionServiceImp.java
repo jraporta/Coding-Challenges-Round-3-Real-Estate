@@ -85,10 +85,11 @@ public class AuctionServiceImp implements AuctionService{
     public AuctionCloseResponse closeAuction(Long auctionId) {
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new AuctionException(AUCTION_NOT_FOUND));
+        auction.getProperty().setAvailability("Unavailable");
         auction.setStatus("closed");
         auctionRepository.save(auction);
         Optional<Bid> winningBid = bidRepository.findAllByAuction(auction).stream()
-                .max(Comparator.comparing(Bid::getTimestamp));
+                .max(Comparator.comparing(Bid::getBidAmount));
         return winningBid.map(bid -> new AuctionCloseResponse(true, "Auction closed successfully.",
                 auction.getCurrentHighestBid(), bid.getUser().getId()))
                 .orElseGet(() -> new AuctionCloseResponse(true,
@@ -97,8 +98,10 @@ public class AuctionServiceImp implements AuctionService{
 
     @RabbitListener(queues = RabbitMQConfig.QUEUE_NAME)
     private void bidConsumer(Bid bid){
-        bid.getAuction().setCurrentHighestBid(bid.getBidAmount());
-        bidRepository.save(bid);
+        if (bid.getAuction().getCurrentHighestBid().compareTo(bid.getBidAmount()) < 0) {
+            bid.getAuction().setCurrentHighestBid(bid.getBidAmount());
+            bidRepository.save(bid);
+        }
     }
 
     private void validateBid(Auction auction, BigDecimal bidAmount) {
