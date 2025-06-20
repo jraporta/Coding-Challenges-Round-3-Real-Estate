@@ -1,3 +1,7 @@
+Proud to finish in 4th place!
+
+![final_score](https://github.com/user-attachments/assets/a89d0f5f-cf97-4948-9e34-c5daaaab212a)
+
 # 🏦 CaixaBank Java Backend Challenge - Real Estate Auctionator 🏡
 
 **Category:** Software  
